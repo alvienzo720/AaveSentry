@@ -3,6 +3,7 @@ import { configParams } from "../config/config";
 import { getBalanceLinkToken } from "../controllers/getBalance";
 import { supplyLiquidity } from "../controllers/supplyLiquidity";
 import { ethers } from "hardhat";
+import { withdrawlLiquidity } from "../controllers/withdrawLiquidity";
 
 
 const commands = [
@@ -20,6 +21,10 @@ const commands = [
     },
     {
         name: 'supplyliquidity',
+        description: 'Replies with supllied liquidity'
+    },
+    {
+        name: 'withdrawal',
         description: 'Replies with supllied liquidity'
     },
 
@@ -103,10 +108,35 @@ bot.on('interactionCreate', async supplyliquidityeth => {
 
             if (typeof response !== 'string') {
                 response = JSON.stringify(response);
-            
+
             }
-       
+
             await supplyliquidityeth.reply(response);
+        }
+
+    } catch (error) {
+
+        console.log(error);
+
+    }
+
+
+})
+
+bot.on('interactionCreate', async withdrawaleth => {
+    try {
+        if (!withdrawaleth.isChatInputCommand()) return;
+        if (withdrawaleth.commandName === 'withdrawal') {
+            const amount = ethers.utils.parseUnits('10', '18');
+
+            let response = await withdrawlLiquidity(configParams.LINK_ADDRESS, amount);
+
+            if (typeof response !== 'string') {
+                response = JSON.stringify(response);
+
+            }
+
+            await withdrawaleth.reply(response);
         }
 
     } catch (error) {
