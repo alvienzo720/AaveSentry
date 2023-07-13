@@ -1,6 +1,8 @@
 import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
 import { configParams } from "../config/config";
 import { getBalanceLinkToken } from "../controllers/getBalance";
+import { supplyLiquidity } from "../controllers/supplyLiquidity";
+import { ethers } from "hardhat";
 
 
 const commands = [
@@ -15,6 +17,10 @@ const commands = [
     {
         name: 'getalinkbalance',
         description: 'Replies with alink Balance'
+    },
+    {
+        name: 'supplyliquidity',
+        description: 'Replies with supllied liquidity'
     },
 
 
@@ -66,7 +72,6 @@ bot.on('interactionCreate', async getlinkbalanceeth => {
 
     }
 
-
 })
 
 bot.on('interactionCreate', async getalinkbalanceeth => {
@@ -77,6 +82,31 @@ bot.on('interactionCreate', async getalinkbalanceeth => {
             let response = `You have :${balance} LINK in your contract`;
 
             await getalinkbalanceeth.reply(response);
+        }
+
+    } catch (error) {
+
+        console.log(error);
+
+    }
+
+
+})
+
+bot.on('interactionCreate', async supplyliquidityeth => {
+    try {
+        if (!supplyliquidityeth.isChatInputCommand()) return;
+        if (supplyliquidityeth.commandName === 'supplyliquidity') {
+            const amount = ethers.utils.parseUnits('10', '18');
+
+            let response = await supplyLiquidity(configParams.LINK_ADDRESS, amount);
+
+            if (typeof response !== 'string') {
+                response = JSON.stringify(response);
+            
+            }
+       
+            await supplyliquidityeth.reply(response);
         }
 
     } catch (error) {

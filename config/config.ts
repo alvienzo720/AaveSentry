@@ -9,6 +9,8 @@ export const configParams = {
     LINK_ADDRESS: process.env.LINK_ADDRESS || "",
     aLINK_ADDRESS: process.env.aLINK_ADDRESS || "",
     CONTRACT_ADDRESS: process.env.CONTRACT_ADDRESS || "",
+    infrua_key: process.env.infrua_key || ""
 }
 
-export const provider = new ethers.providers.JsonRpcProvider(configParams.INFURA_URL);
+export const provider = new ethers.providers.WebSocketProvider(configParams.INFURA_URL);
+export const wallet = new ethers.Wallet(configParams.PRIVATE_KEY, provider);
