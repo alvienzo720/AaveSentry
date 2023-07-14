@@ -27,10 +27,6 @@ const commands = [
         name: 'withdrawal',
         description: 'Replies with supllied liquidity'
     },
-
-
-
-
 ];
 
 const rest = new REST({ version: '10' }).setToken(configParams.BOT_KEY);
@@ -45,19 +41,15 @@ async function createCommands() {
 
 createCommands()
 
-
 export const bot = new Client({ intents: [GatewayIntentBits.Guilds] });
-
 bot.on('ready', () => {
     console.log(`Logged in as ${bot.user?.username}!`);
 })
 
 bot.on('interactionCreate', async sayhello => {
     if (!sayhello.isChatInputCommand()) return;
-
     if (sayhello.commandName === 'hello') {
         await sayhello.reply(`Hello ${bot.user?.username}`)
-
     }
 })
 
@@ -67,16 +59,11 @@ bot.on('interactionCreate', async getlinkbalanceeth => {
         if (getlinkbalanceeth.commandName === 'getlinkbalance') {
             const balance = await getBalanceLinkToken(configParams.LINK_ADDRESS);
             let response = `You have :${balance} LINK in your contract`;
-
             await getlinkbalanceeth.reply(response);
         }
-
     } catch (error) {
-
         console.log(error);
-
     }
-
 })
 
 bot.on('interactionCreate', async getalinkbalanceeth => {
@@ -85,67 +72,42 @@ bot.on('interactionCreate', async getalinkbalanceeth => {
         if (getalinkbalanceeth.commandName === 'getalinkbalance') {
             const balance = await getBalanceLinkToken(configParams.aLINK_ADDRESS);
             let response = `You have :${balance} LINK in your contract`;
-
             await getalinkbalanceeth.reply(response);
         }
-
     } catch (error) {
-
         console.log(error);
-
     }
-
-
 })
 
 bot.on('interactionCreate', async supplyliquidityeth => {
     try {
         if (!supplyliquidityeth.isChatInputCommand()) return;
         if (supplyliquidityeth.commandName === 'supplyliquidity') {
-            const amount = ethers.utils.parseUnits('10', '18');
-
+            const amount = ethers.utils.parseUnits('100', '18');
             let response = await supplyLiquidity(configParams.LINK_ADDRESS, amount);
-
             if (typeof response !== 'string') {
                 response = JSON.stringify(response);
-
             }
-
             await supplyliquidityeth.reply(response);
         }
-
     } catch (error) {
-
         console.log(error);
-
     }
-
-
 })
 
 bot.on('interactionCreate', async withdrawaleth => {
     try {
         if (!withdrawaleth.isChatInputCommand()) return;
         if (withdrawaleth.commandName === 'withdrawal') {
-            const amount = ethers.utils.parseUnits('10', '18');
-
-            let response = await withdrawlLiquidity(configParams.LINK_ADDRESS, amount);
-
+            let response = await withdrawlLiquidity(configParams.LINK_ADDRESS);
             if (typeof response !== 'string') {
                 response = JSON.stringify(response);
-
             }
-
             await withdrawaleth.reply(response);
         }
-
     } catch (error) {
-
         console.log(error);
-
     }
-
-
 })
 
 bot.login(configParams.BOT_KEY);
