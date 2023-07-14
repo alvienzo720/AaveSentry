@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
 import { configParams } from "../config/config";
 import { getBalanceLinkToken } from "../controllers/getBalance";
-import { supplyLiquidity } from "../controllers/supplyLiquidity";
+import { getPNL, supplyLiquidity } from "../controllers/supplyLiquidity";
 import { ethers } from "hardhat";
 import { withdrawlLiquidity } from "../controllers/withdrawLiquidity";
 
@@ -26,6 +26,10 @@ const commands = [
     {
         name: 'withdrawal',
         description: 'Replies with supllied liquidity'
+    },
+    {
+        name: 'pnl',
+        description: 'Replies with Profit And Loss Gained'
     },
 ];
 
@@ -109,5 +113,21 @@ bot.on('interactionCreate', async withdrawaleth => {
         console.log(error);
     }
 })
+
+bot.on('interactionCreate', async profitloss => {
+    try {
+        if (!profitloss.isChatInputCommand()) return;
+        if (profitloss.commandName === 'pnl') {
+            let response = await getPNL(configParams.CONTRACT_ADDRESS);
+            if (typeof response !== 'string') {
+                response = JSON.stringify(response);
+            }
+            await profitloss.reply(response);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 
 bot.login(configParams.BOT_KEY);
