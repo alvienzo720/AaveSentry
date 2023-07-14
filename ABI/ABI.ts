@@ -85,6 +85,25 @@ export const ABI =
             "inputs": [
                 {
                     "internalType": "address",
+                    "name": "userAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "calculateProfilt",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
                     "name": "_tokenAddress",
                     "type": "address"
                 }
@@ -138,6 +157,25 @@ export const ABI =
                 {
                     "internalType": "uint256",
                     "name": "healthFactor",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "investments",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
                     "type": "uint256"
                 }
             ],
