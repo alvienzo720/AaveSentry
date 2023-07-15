@@ -2,6 +2,7 @@ import { ethers } from "hardhat";
 import "@nomiclabs/hardhat-ethers";
 import { ABI } from "../ABI/ABI";
 import { configParams, wallet } from "../config/config";
+import { getBalanceLinkToken } from "./getBalance";
 
 
 export async function supplyLiquidity(token_address: string, amount: any) {
@@ -20,16 +21,18 @@ export async function supplyLiquidity(token_address: string, amount: any) {
 
 }
 
-export async function getPNL(contract_address: string) {
+export async function getPNL() {
     try {
-        const contract = new ethers.Contract(configParams.CONTRACT_ADDRESS, ABI, wallet);
-        const pnl = contract.calculateProfilt(contract_address);
-        let tx = await pnl
-        let message = `Your pnl is ${ethers.utils.formatEther(tx)}\n`
-        return message
+        let tokenSupplied: any = await getBalanceLinkToken(configParams.LINK_ADDRESS);
+        let tokenOut: any = await getBalanceLinkToken(configParams.aLINK_ADDRESS);
+
+        const result = tokenOut - tokenSupplied;
+
+        return result;
+
     } catch (error) {
         console.log(error);
-
     }
-
 }
+
+
