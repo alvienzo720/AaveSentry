@@ -118,11 +118,12 @@ bot.on('interactionCreate', async profitloss => {
     try {
         if (!profitloss.isChatInputCommand()) return;
         if (profitloss.commandName === 'pnl') {
-            let response = await getPNL(configParams.CONTRACT_ADDRESS);
-            if (typeof response !== 'string') {
-                response = JSON.stringify(response);
+            let response = await getPNL();
+            if (response === undefined) {
+                response = 0; // or set a default message like "Could not calculate profit/loss"
             }
-            await profitloss.reply(response);
+            const message = `Your profit/loss is: ${response.toString()}`;
+            await profitloss.reply(message);
         }
     } catch (error) {
         console.log(error);
