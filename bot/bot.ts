@@ -5,6 +5,11 @@ import { getPNL, supplyLiquidity } from "../controllers/supplyLiquidity";
 import { ethers } from "hardhat";
 import { withdrawlLiquidity } from "../controllers/withdrawLiquidity";
 
+let latestPNL: number | null = null;
+
+getPNL((pnl: number) => {
+    latestPNL = pnl;
+});
 
 const commands = [
     {
@@ -118,17 +123,17 @@ bot.on('interactionCreate', async profitloss => {
     try {
         if (!profitloss.isChatInputCommand()) return;
         if (profitloss.commandName === 'pnl') {
-            let response = await getPNL();
-            if (response === undefined) {
-                response = 0; // or set a default message like "Could not calculate profit/loss"
+            if (latestPNL === null) {
+                await profitloss.reply("PNL not calculated yet. Please try again later.");
+            } else {
+                const message = `Your profit/loss is: ${latestPNL.toString()}`;
+                await profitloss.reply(message);
             }
-            const message = `Your profit/loss is: ${response.toString()}`;
-            await profitloss.reply(message);
         }
     } catch (error) {
         console.log(error);
     }
-})
+});
 
 
 bot.login(configParams.BOT_KEY);
