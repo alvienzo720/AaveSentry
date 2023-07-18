@@ -4,12 +4,9 @@ import { getBalanceLinkToken } from "../controllers/getBalance";
 import { getPNL, supplyLiquidity } from "../controllers/supplyLiquidity";
 import { ethers } from "hardhat";
 import { withdrawlLiquidity } from "../controllers/withdrawLiquidity";
+import cron from "node-cron"
 
-let latestPNL: number | null = null;
 
-getPNL((pnl: number) => {
-    latestPNL = pnl;
-});
 
 const commands = [
     {
@@ -119,16 +116,28 @@ bot.on('interactionCreate', async withdrawaleth => {
     }
 })
 
+let pnlTask: cron.ScheduledTask | null = null;
+
 bot.on('interactionCreate', async profitloss => {
     try {
         if (!profitloss.isChatInputCommand()) return;
+        
         if (profitloss.commandName === 'pnl') {
-            if (latestPNL === null) {
-                await profitloss.reply("PNL not calculated yet. Please try again later.");
-            } else {
-                const message = `Your profit/loss is: ${latestPNL.toString()}`;
-                await profitloss.reply(message);
+            if (pnlTask) {
+                pnlTask.stop();
             }
+            
+            pnlTask = cron.schedule('*/20 * * * * *', async () => {
+                try {
+                    let tokenSupplied: any = await getBalanceLinkToken(configParams.LINK_ADDRESS);
+                    let tokenOut: any = await getBalanceLinkToken(configParams.aLINK_ADDRESS);
+                    const result = tokenOut - tokenSupplied;
+                    const message = `Your profit/loss is: ${result.toString()}`;
+                    await profitloss.reply(message);
+                } catch (error) {
+                    console.log(error);
+                }
+            });
         }
     } catch (error) {
         console.log(error);
