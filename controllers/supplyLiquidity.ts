@@ -21,9 +21,8 @@ export async function supplyLiquidity(token_address: string, amount: any) {
 
 
 
-export function getPNL(onPNLCalculated: (pnl: number) => void) {
-    // Schedule this function to run every 20 seconds
-    cron.schedule('*/20 * * * * *', async () => {
+export async function getPNL(onPNLCalculated: (pnl: number) => void) {
+
         try {
             let tokenSupplied: any = await getBalanceLinkToken(configParams.LINK_ADDRESS);
             let tokenOut: any = await getBalanceLinkToken(configParams.aLINK_ADDRESS);
@@ -33,7 +32,7 @@ export function getPNL(onPNLCalculated: (pnl: number) => void) {
         } catch (error) {
             console.log(error);
         }
-    });
+    
 }
 
 

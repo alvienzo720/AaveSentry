@@ -1,11 +1,13 @@
-import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
+import { Client, DMChannel, GatewayIntentBits, NewsChannel, REST, Routes, TextChannel } from "discord.js";
 import { configParams } from "../config/config";
 import { getBalanceLinkToken } from "../controllers/getBalance";
 import { getPNL, supplyLiquidity } from "../controllers/supplyLiquidity";
 import { ethers } from "hardhat";
 import { withdrawlLiquidity } from "../controllers/withdrawLiquidity";
-import cron from "node-cron"
+import * as Discord from "discord.js"
 
+
+const channleId = "1127930730991853611"
 
 
 const commands = [
@@ -50,7 +52,20 @@ createCommands()
 export const bot = new Client({ intents: [GatewayIntentBits.Guilds] });
 bot.on('ready', () => {
     console.log(`Logged in as ${bot.user?.username}!`);
-})
+    const channel = bot.channels.cache.get(channleId) as Discord.TextChannel;
+    if (!channel) {
+        console.log(`Channel ${channleId} not found`);
+        return;
+    }
+
+    // setInterval(async () => {
+    //     getPNL((pnl) => {
+    //         const message = `Your PNL is ${pnl}`;
+    //         channel.send(message);
+    //     });
+    // }, 40000);
+});
+
 
 bot.on('interactionCreate', async sayhello => {
     if (!sayhello.isChatInputCommand()) return;
@@ -116,31 +131,32 @@ bot.on('interactionCreate', async withdrawaleth => {
     }
 })
 
-let pnlTask: cron.ScheduledTask | null = null;
 
-bot.on('interactionCreate', async profitloss => {
-    try {
-        if (!profitloss.isChatInputCommand()) return;
+let pnlTask:any = null;
+
+bot.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+
+    const { commandName } = interaction;
+
+    if (commandName === 'pnl') {
+        if (pnlTask !== null) {
+            clearInterval(pnlTask);
+            pnlTask = null;
+            await interaction.reply('Stopping the current PNL task.');
+            return;
+        }
+
+        await interaction.reply('Starting a new PNL task.');
         
-        if (profitloss.commandName === 'pnl') {
-            if (pnlTask) {
-                pnlTask.stop();
-            }
-            
-            pnlTask = cron.schedule('*/20 * * * * *', async () => {
-                try {
-                    let tokenSupplied: any = await getBalanceLinkToken(configParams.LINK_ADDRESS);
-                    let tokenOut: any = await getBalanceLinkToken(configParams.aLINK_ADDRESS);
-                    const result = tokenOut - tokenSupplied;
-                    const message = `Your profit/loss is: ${result.toString()}`;
-                    await profitloss.reply(message);
-                } catch (error) {
-                    console.log(error);
+        pnlTask = setInterval(async () => {
+            getPNL((pnl) => {
+                const message = `Your PNL is ${pnl}`;
+                if (interaction.channel instanceof TextChannel || interaction.channel instanceof DMChannel || interaction.channel instanceof NewsChannel) {
+                    interaction.channel.send(message);
                 }
             });
-        }
-    } catch (error) {
-        console.log(error);
+        }, 40000);
     }
 });
 
