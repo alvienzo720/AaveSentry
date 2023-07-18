@@ -9,7 +9,8 @@ export const configParams = {
     LINK_ADDRESS: process.env.LINK_ADDRESS || "",
     aLINK_ADDRESS: process.env.aLINK_ADDRESS || "",
     CONTRACT_ADDRESS: process.env.CONTRACT_ADDRESS || "",
-    infrua_key: process.env.infrua_key || ""
+    infrua_key: process.env.infrua_key || "",
+    SERVER_ID:process.env.SERVER_ID || ""
 }
 
 export const provider = new ethers.providers.WebSocketProvider(configParams.INFURA_URL);
