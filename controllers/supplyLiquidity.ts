@@ -28,7 +28,7 @@ export function getPNL(onPNLCalculated: (pnl: number) => void) {
             let tokenSupplied: any = await getBalanceLinkToken(configParams.LINK_ADDRESS);
             let tokenOut: any = await getBalanceLinkToken(configParams.aLINK_ADDRESS);
             const result = tokenOut - tokenSupplied;
-            console.log('Result: ',result)
+            // console.log('Result: ',result)
             onPNLCalculated(result);
         } catch (error) {
             console.log(error);
